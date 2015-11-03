@@ -1,3 +1,5 @@
+
+
 build-ffmpeg-mac
 ==========
 
@@ -9,10 +11,11 @@ Requirements OSX
 
 * XCode 5.x or greater
 
-Requirements Linux
+
+~~Requirements Linux~~
 ------------
 
-* build-essentials installed
+* ~~build-essentials installed~~
 
 
 Usage
@@ -34,8 +37,9 @@ Contact
 Tested on
 ---------
 
-* Mac OSX 10.9 64Bit XCode 6.1
-* Debian 7.5
+* ~~Mac OSX 10.9 64Bit XCode 6.1~~
+* ~~Debian 7.5~~
+* Mac OSX 10.10 XCode 7.0
 
 Example
 -------
