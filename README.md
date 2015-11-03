@@ -1,3 +1,4 @@
+[Forked from](https://github.com/markus-perl/ffmpeg-build-script)  to slove my own xcode issue. Please check the original repository first.
 
 
 build-ffmpeg-mac
