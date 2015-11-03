@@ -4,32 +4,32 @@
 # Version 0.2
 
 CWD=`pwd`
-PACKAGES="$CWD/packages" 
+PACKAGES="$CWD/packages"
 WORKSPACE="$CWD/workspace"
 CC=clang
-LDFLAGS="-L${WORKSPACE}/lib -lm" 
+LDFLAGS="-L${WORKSPACE}/lib -lm"
 CFLAGS="-I${WORKSPACE}/include"
 PKG_CONFIG_PATH="${WORKSPACE}/lib/pkgconfig"
 
 make_dir () {
 	if [ ! -d $1 ]; then
-		if ! mkdir $1; then			
+		if ! mkdir $1; then
 			echo "\nFailed to create dir $1";
 			exit 1
 		fi
-	fi	
+	fi
 }
 
 remove_dir () {
 	if [ -d $1 ]; then
 		rm -r "$1"
-	fi	
+	fi
 
 }
 
 download () {
 	if [ ! -f "$PACKAGES/$2" ]; then
-		
+
 		printf "Downloading $1"
 		curl -L --silent -o "$PACKAGES/$2" "$1"
 		EXITCODE=$?
@@ -38,28 +38,28 @@ download () {
 			echo "Failed to download $1. Exitcode $EXITCODE";
 			exit 1
 		fi
-		
+
 		printf " ... Done\n"
-		
+
 		if ! tar -xvf "$PACKAGES/$2" -C "$PACKAGES" 2>/dev/null >/dev/null; then
 			echo "Failed to extract $2";
 			exit 1
 		fi
-		
+
 	fi
 }
 
 execute () {
 	echo "$ $@"
 	OUTPUT="$($@ 2>&1)"
-	
+
 	if [ $? -ne 0 ]; then
         echo $OUTPUT
         echo ""
         echo "Failed to Execute $@" >&2
         exit 1
     fi
-	
+
 }
 
 build () {
@@ -67,14 +67,14 @@ build () {
 	echo ""
 	echo "building $1"
 	echo "======================="
-	
+
 	if [ -f "$PACKAGES/$1.done" ]; then
 		echo "$1 already built. Remove $PACKAGES/$1.done lockfile to rebuild it."
 		return 1
 	fi
-	
-	
-	
+
+
+
 	return 0
 }
 
@@ -115,8 +115,8 @@ export PATH=${WORKSPACE}/bin:$PATH
 if build "yasm"; then
 	download "http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz" "yasm-1.3.0.tar.gz"
 	cd $PACKAGES/yasm-1.3.0
-	execute ./configure --prefix=${WORKSPACE} 
-	execute make -j 4 
+	execute ./configure --prefix=${WORKSPACE}
+	execute make -j 4
 	execute make install
 	build_done "yasm"
 fi
@@ -124,16 +124,16 @@ fi
 
 if build "opencore"; then
 	download "http://downloads.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-0.1.3.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fopencore-amr%2Ffiles%2Fopencore-amr%2F&ts=1442256558&use_mirror=netassist" "opencore-amr-0.1.3.tar.gz"
-	cd $PACKAGES/opencore-amr-0.1.3 
-	execute ./configure --prefix=${WORKSPACE} --disable-shared --enable-static 
-	execute make -j 4 
+	cd $PACKAGES/opencore-amr-0.1.3
+	execute ./configure --prefix=${WORKSPACE} --disable-shared --enable-static
+	execute make -j 4
 	execute make install
 	build_done "opencore"
 fi
 
 if build "libvpx"; then
-	download "http://storage.googleapis.com/downloads.webmproject.org/releases/webm/libvpx-1.4.0.tar.bz2" "libvpx-1.4.0.tar.bz2" 
-	cd $PACKAGES/libvpx* 
+	download "http://storage.googleapis.com/downloads.webmproject.org/releases/webm/libvpx-1.4.0.tar.bz2" "libvpx-1.4.0.tar.bz2"
+	cd $PACKAGES/libvpx*
 	sed   -e 's/cp -p/cp/' -i build/make/Makefile
 	execute ./configure --prefix=${WORKSPACE} --disable-unit-tests --disable-shared
 	execute make -j 4
@@ -142,7 +142,7 @@ if build "libvpx"; then
 fi
 
 if build "lame"; then
-	download "http://kent.dl.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz" "lame-3.99.5.tar.gz" 
+	download "http://kent.dl.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz" "lame-3.99.5.tar.gz"
 	cd $PACKAGES/lame-3.99.5
 	execute ./configure --prefix=${WORKSPACE} --disable-shared --enable-static
 	execute make -j 4
@@ -152,8 +152,8 @@ fi
 
 if build "xvidcore"; then
 	download "http://downloads.xvid.org/downloads/xvidcore-1.3.3.tar.gz" "xvidcore-1.3.3.tar.gz"
-	cd $PACKAGES/xvidcore 
-	cd build/generic 
+	cd $PACKAGES/xvidcore
+	cd build/generic
 	execute ./configure --prefix=${WORKSPACE} --disable-shared --enable-static
 	execute make -j 4
 	execute make install
@@ -161,14 +161,14 @@ if build "xvidcore"; then
 	if [ -f ${WORKSPACE}/lib/libxvidcore.4.dylib ]; then
 	    execute rm ${WORKSPACE}/lib/libxvidcore.4.dylib
 	fi
-	
+
 	build_done "xvidcore"
 fi
 
 
 if build "x264"; then
 	download "ftp://ftp.videolan.org/pub/x264/snapshots/last_x264.tar.bz2" "last_x264.tar.bz2"
-	cd $PACKAGES/x264-snapshot-* 
+	cd $PACKAGES/x264-snapshot-*
 	execute ./configure --prefix=${WORKSPACE} --disable-shared --enable-static
 	execute make -j 4
 	execute make install
@@ -188,7 +188,7 @@ fi
 
 if build "libvorbis"; then
 	download "http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.4.tar.gz" "libvorbis-1.3.4.tar.gz"
-	cd $PACKAGES/libvorbis-1.3.4 
+	cd $PACKAGES/libvorbis-1.3.4
 	execute ./configure --prefix=${WORKSPACE} --with-ogg-libraries=${WORKSPACE}/lib --with-ogg-includes=${WORKSPACE}/include/ --enable-static --disable-shared --disable-oggtest
 	execute make -j 4
 	execute make install
@@ -197,7 +197,7 @@ fi
 
 if build "libtheora"; then
 	download "http://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.gz" "libtheora-1.1.1.tar.bz"
-	cd $PACKAGES/libtheora-1.1.1 
+	cd $PACKAGES/libtheora-1.1.1
 	sed "s/-fforce-addr//g" configure > configure.patched
 	chmod +x configure.patched
 	mv configure.patched configure
@@ -209,7 +209,7 @@ fi
 
 if build "pkg-config"; then
 	download "http://pkgconfig.freedesktop.org/releases/pkg-config-0.28.tar.gz" "pkg-config-0.28.tar.gz"
-	cd $PACKAGES/pkg-config-0.28 
+	cd $PACKAGES/pkg-config-0.28
 	execute ./configure --silent --prefix=${WORKSPACE} --with-pc-path=${WORKSPACE}/lib/pkgconfig --with-internal-glib
 	execute make -j 4
 	execute make install
@@ -218,11 +218,11 @@ fi
 
 if build "cmake"; then
 	download "http://www.cmake.org/files/v3.0/cmake-3.0.2.tar.gz" "cmake-3.0.2.tar.gz"
-	cd $PACKAGES/cmake* 
+	cd $PACKAGES/cmake*
 	rm Modules/FindJava.cmake
-	perl -p -i -e "s/get_filename_component.JNIPATH/#get_filename_component(JNIPATH/g" Tests/CMakeLists.txt 
-	perl -p -i -e "s/get_filename_component.JNIPATH/#get_filename_component(JNIPATH/g" Tests/CMakeLists.txt 
-	execute ./configure --prefix=${WORKSPACE} 
+	perl -p -i -e "s/get_filename_component.JNIPATH/#get_filename_component(JNIPATH/g" Tests/CMakeLists.txt
+	perl -p -i -e "s/get_filename_component.JNIPATH/#get_filename_component(JNIPATH/g" Tests/CMakeLists.txt
+	execute ./configure --prefix=${WORKSPACE}
 	execute make -j 4
 	execute make install
 	build_done "cmake"
@@ -231,8 +231,8 @@ fi
 if build "vid_stab"; then
 	download "https://codeload.github.com/georgmartius/vid.stab/legacy.tar.gz/release-0.98b" "vid.stab-0.98b-transcode-1.1-binary-x86_64.tgz"
 	cd $PACKAGES/georgmartius-vid*
-	perl -p -i -e "s/vidstab SHARED/vidstab STATIC/" CMakeLists.txt 
-	execute cmake -DCMAKE_INSTALL_PREFIX:PATH=${WORKSPACE} . 
+	perl -p -i -e "s/vidstab SHARED/vidstab STATIC/" CMakeLists.txt
+	execute cmake -DCMAKE_INSTALL_PREFIX:PATH=${WORKSPACE} .
 	execute make -s install
 	build_done "vid_stab"
 fi
@@ -241,7 +241,7 @@ if build "x265"; then
 	download "https://bitbucket.org/multicoreware/x265/downloads/x265_1.7.tar.gz" "x265-1.7.tar.gz"
 	cd $PACKAGES/x265_1.7
 	cd source
-	execute cmake -DCMAKE_INSTALL_PREFIX:PATH=${WORKSPACE} -DENABLE_SHARED:bool=off . 
+	execute cmake -DCMAKE_INSTALL_PREFIX:PATH=${WORKSPACE} -DENABLE_SHARED:bool=off .
 	execute make -j 4
 	execute make install
 	sed "s/-lx265/-lx265 -lstdc++/g" "$WORKSPACE/lib/pkgconfig/x265.pc" > "$WORKSPACE/lib/pkgconfig/x265.pc.tmp"
@@ -252,7 +252,7 @@ fi
 if build "fdk_aac"; then
 	# download "http://downloads.sourceforge.net/project/opencore-amr/fdk-aac/fdk-aac-0.1.3.tar.gz" "fdk-aac-0.1.3.tar.gz"
 	download "http://ftp.cc.uoc.gr/mirrors/linux/lfs/LFS/7.6/f/fdk-aac-0.1.3.tar.gz" "fdk-aac-0.1.3.tar.gz"
-	
+
 	cd $PACKAGES/fdk-aac*
 	execute ./configure --prefix=${WORKSPACE} --disable-shared --enable-static
 	execute make -j 4
@@ -264,8 +264,8 @@ fi
 build "ffmpeg"
 download "http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 " "ffmpeg-snapshot.tar.bz2 "
 cd $PACKAGES/ffmpeg*
-CFLAGS="-I$WORKSPACE/include" LDFLAGS="-L$WORKSPACE/lib" 
-execute ./configure  --arch=64 --prefix=${WORKSPACE} --extra-cflags="-I$WORKSPACE/include" --extra-ldflags="-L$WORKSPACE/lib" --extra-version=static --disable-debug --disable-shared --enable-static --extra-cflags=--static --disable-ffplay --disable-ffserver --disable-doc --enable-version3 --enable-libvpx --enable-libmp3lame --enable-libtheora --enable-libvorbis --enable-libx264 --enable-avfilter --enable-gpl --enable-libopencore_amrwb --enable-libopencore_amrnb --enable-nonfree --enable-filters --enable-libvidstab --enable-libx265 --enable-runtime-cpudetect --enable-libfdk-aac
+CFLAGS="-I$WORKSPACE/include" LDFLAGS="-L$WORKSPACE/lib"
+execute ./configure  --arch=x86_64 --prefix=${WORKSPACE} --extra-cflags="-I$WORKSPACE/include" --extra-ldflags="-L$WORKSPACE/lib"  --disable-debug --enable-shared --enable-pthreads --enable-gpl --enable-version3 --enable-nonfree --enable-hardcoded-tables --enable-avresample --enable-vda --cc=cc --host-cflags= --host-ldflags= --enable-libx264  --enable-libmp3lame --enable-libxvid  --enable-libtheora --enable-libvorbis --enable-libvpx  --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libvo-aacenc  --enable-ffplay   --enable-libfdk-aac
 execute make -j 4
 execute make install
 
