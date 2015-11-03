@@ -1,4 +1,4 @@
-[Forked from](https://github.com/markus-perl/ffmpeg-build-script)  to slove my own xcode issue. Please check the original repository first.
+Forked to slove my own xcode issue. Please check the [original repository](https://github.com/markus-perl/ffmpeg-build-script) first.
 
 
 build-ffmpeg-mac
